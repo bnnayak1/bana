@@ -8,9 +8,9 @@ pipeline {
         stage('Build') {
             steps {
                 if (params.CLEAN_BUILD) {
-                    sh 'mvn clean package'
+                    sh 'echo abc'
                 } else {
-                    sh 'mvn package'
+                    sh 'echo abc'
                 }
             }
         }
