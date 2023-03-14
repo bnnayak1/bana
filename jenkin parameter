@@ -1,0 +1,26 @@
+pipeline {
+    agent any
+    parameters {
+        string(name: 'ENVIRONMENT', defaultValue: 'dev', description: 'Which environment to deploy to')
+        booleanParam(name: 'CLEAN_BUILD', defaultValue: true, description: 'Whether to do a clean build or not')
+    }
+    stages {
+        stage('Build') {
+            steps {
+                if (params.CLEAN_BUILD) {
+                    sh 'mvn clean package'
+                } else {
+                    sh 'mvn package'
+                }
+            }
+        }
+        stage('Deploy') {
+            when {
+                expression { params.ENVIRONMENT == 'qa' || params.ENVIRONMENT == 'prod' }
+            }
+            steps {
+                sh "deploy.sh ${params.ENVIRONMENT}"
+            }
+        }
+    }
+}
