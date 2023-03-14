@@ -1,25 +1,24 @@
 pipeline {
     agent any
     parameters {
-        string(name: 'ENVIRONMENT', defaultValue: 'dev', description: 'Which environment to deploy to')
-        booleanParam(name: 'CLEAN_BUILD', defaultValue: true, description: 'Whether to do a clean build or not')
+        choice(name: 'ENVIRONMENT', choices: ['dev', 'qa', 'prod'], description: 'Which environment to deploy to')
+        string(name: 'TAG', defaultValue: 'latest', description: 'Docker image tag to deploy')
     }
     stages {
         stage('Build') {
             steps {
-                if (params.CLEAN_BUILD) {
-                    sh 'echo abc'
-                } else {
-                    sh 'echo abc'
-                }
+                sh 'npm install'
+                sh 'npm run build'
             }
         }
         stage('Deploy') {
             when {
-                expression { params.ENVIRONMENT == 'qa' || params.ENVIRONMENT == 'prod' }
+                expression { params.ENVIRONMENT != 'dev' }
             }
             steps {
-                sh "deploy.sh ${params.ENVIRONMENT}"
+                sh "docker build -t myapp:${params.TAG} ."
+                sh "docker push myapp:${params.TAG}"
+                sh "deploy.sh ${params.ENVIRONMENT} ${params.TAG}"
             }
         }
     }
