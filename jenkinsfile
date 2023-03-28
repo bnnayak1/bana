@@ -1,22 +1,14 @@
 pipeline {
-    agent any
-    parameters {
-        choice(name: 'ENVIRONMENT', choices: ['dev', 'qa', 'prod'], description: 'Which environment to deploy to')
-        string(name: 'TAG', defaultValue: 'latest', description: 'Docker image tag to deploy')
-    }
-    stages {
-        stage('Build') {
-            steps {
-                sh 'echo abc'
-            }
-        }
-        stage('Deploy') {
-            when {
-                expression { params.ENVIRONMENT != 'dev' }
-            }
-            steps {
-                sh "echo dev"
+    agent none
 
+    stages {
+        stage('Build') { 
+        agent any
+		    options {
+				skipDefaultCheckout()
+			}
+            steps {
+                echo 'Hello World'
             }
         }
     }
